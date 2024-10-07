@@ -1,0 +1,6 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/VirgilSecurity/demo-backend-nodejs
+[submodule "client"]
+	path = client
+	url = https://github.com/VirgilSecurity/demo-e3kit-web
