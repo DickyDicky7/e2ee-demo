@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { sendMessageToServer } from "@/commons/functions";
 import { EncryptedData } from "@/commons/shared";
-import {decrypt} from "@/commons/decrypt";
+import { decrypt } from "@/commons/decrypt";
 import { secp256k1 } from "@noble/curves/secp256k1";
 import useWebSocket from "react-native-use-websocket";
-import {encrypt} from "@/commons/encrypt";
+import { encrypt } from "@/commons/encrypt";
 // import * as Aes from "react-native-aes-crypto"
 
 var Buffer = require("buffer/").Buffer
@@ -14,7 +14,7 @@ let privateKey: Uint8Array;
 let public_Key: Uint8Array;
 let sharedSecretKey: Uint8Array;
 // const decryptNative = async (encryptionData: EncryptedData, base64SecretKey: string): Promise<string> => {
-    
+
 //     return await Aes.decrypt(encryptionData.content, base64SecretKey, encryptionData.iv, "aes-256-ctr");
 //     }
 
@@ -49,7 +49,7 @@ const ChatComponent: React.FC = () => {
         onOpen: () => {
             privateKey = Crypto.getRandomBytes(32);
             // privateKey=(secp256k1.utils.randomPrivateKey())
-            public_Key=(secp256k1.getPublicKey(privateKey ))
+            public_Key = (secp256k1.getPublicKey(privateKey))
             console.log(`my private key: ${Buffer.from(privateKey).toString("hex")}`)
             console.log(`my public key: ${Buffer.from(public_Key).toString("hex")}`)
             // console.log(priKey)
@@ -98,7 +98,7 @@ const ChatComponent: React.FC = () => {
 
                 try {
                     // Buffer.from()
-                    sharedSecretKey=(secp256k1.getSharedSecret(privateKey , Uint8Array.from(Buffer.from(obj.publicKey, "hex"))))
+                    sharedSecretKey = (secp256k1.getSharedSecret(privateKey, Uint8Array.from(Buffer.from(obj.publicKey, "hex"))))
                     // console.log(sharedSecret)
                     console.log(`my secret: ${Buffer.from(sharedSecretKey).toString("hex")}`)
 
@@ -118,19 +118,19 @@ const ChatComponent: React.FC = () => {
                 return
             }
             if (obj.type === "exchange-key-back") {
-                sharedSecretKey=(secp256k1.getSharedSecret(privateKey , Uint8Array.from(Buffer.from(obj.publicKey, "hex"))))
+                sharedSecretKey = (secp256k1.getSharedSecret(privateKey, Uint8Array.from(Buffer.from(obj.publicKey, "hex"))))
                 console.log(`my secret: ${Buffer.from(sharedSecretKey).toString("hex")}`)
                 // console.log(sharedSecret)
                 console.log("ok to message")
                 console.log("send message")
                 console.log("i send Hello")
 
-const a = await encrypt("Hello", Buffer.from(sharedSecretKey).toString("hex"))
-sendMessage(JSON.stringify({
-    encrypted_message_iv: a.iv,
-    encrypted_message_content: a.content,
-    type: "sending-message"
-}))
+                const a = await encrypt("Hello", Buffer.from(sharedSecretKey).toString("hex"))
+                sendMessage(JSON.stringify({
+                    encrypted_message_iv: a.iv,
+                    encrypted_message_content: a.content,
+                    type: "sending-message"
+                }))
                 // sendMessageToServer(ws, "Hello", Buffer.from(sharedSecretKey).toString("base64"))
                 return
             }
@@ -157,11 +157,11 @@ sendMessage(JSON.stringify({
     // const [sharedSecretKey, setSharedSecretKey] = useState<Uint8Array>();
     const [newMessage, setNewMessage] = useState<string>("");
     const [lstMessage, setLstMessage] = useState<Message[]>([
-        { id: `${i++}`, text: "Hello!"          , sender: "me"    },
+        { id: `${i++}`, text: "Hello!", sender: "me" },
         { id: `${i++}`, text: "Hi! How are you!", sender: "other" },
     ]);
-    
-    const sendMessage_ = async (sharedSecret:Uint8Array) => {
+
+    const sendMessage_ = async (sharedSecret: Uint8Array) => {
         if (newMessage.trim()) {
             setLstMessage(prevMessages => [
 
@@ -171,14 +171,14 @@ sendMessage(JSON.stringify({
             setNewMessage("");
 
             // sendMessageToServer(ws, newMessage, Buffer.from(sharedSecret).toString("base64"))
-console.log(sharedSecretKey)
+            console.log(sharedSecretKey)
             const a = await encrypt(newMessage, Buffer.from(sharedSecret).toString("hex"))
-sendMessage(JSON.stringify({
-    // ...a,
-    encrypted_message_iv: a.iv,
-    encrypted_message_content: a.content,
-    type: "sending-message",
-}))
+            sendMessage(JSON.stringify({
+                // ...a,
+                encrypted_message_iv: a.iv,
+                encrypted_message_content: a.content,
+                type: "sending-message",
+            }))
         }
     };
 
